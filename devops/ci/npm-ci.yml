@@ -1,0 +1,10 @@
+steps:
+      - checkout: self
+
+      # Additional build steps, such as compiling code, validating JSON files, etc.
+
+      - task: PublishPipelineArtifact@1
+        displayName: 'Publish Artifact'
+        inputs:
+          targetPath: '$(Build.ArtifactStagingDirectory)/ADF'
+          artifactName: 'ADF_Artifacts'

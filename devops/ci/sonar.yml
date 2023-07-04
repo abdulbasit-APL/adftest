@@ -1,0 +1,19 @@
+steps:
+- task: SonarQubePrepare@5
+  displayName: 'Prepare code analysis on SonarQube'
+  inputs:
+    SonarQube: 'SonarQube'
+    scannerMode: CLI
+    extraProperties: |
+      sonar.projectKey=Korio-BE-QA
+      sonar.projectName=Korio-BE-QA
+      sonar.verbose=true
+  timeoutInMinutes: 300    
+- task: SonarQubeAnalyze@5
+  displayName: 'Run code analysis on SonarQube'
+- task: SonarQubePublish@5
+  displayName: 'Publish analysis results to quality gate on SonarQube'
+  inputs:
+    pollingTimeoutSec: '300'
+  continueOnError: true
+  timeoutInMinutes: 300

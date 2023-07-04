@@ -1,0 +1,24 @@
+steps:
+
+# Pull the sast-scan image from the container registry. Feel free to cache it locally within acr, ecr or gcr to
+# improve performance and security
+- script: docker pull shiftleft/sast-scan:latest
+  displayName: "Download shiftleft Docker Image"
+- script: |
+    docker run \
+      -e "VDB_HOME=/reports/vdb" \
+      -e "ENABLE_OSS_RISK=true" \
+      -v "$(Build.SourcesDirectory):/app" \
+      -v "$(Build.ArtifactStagingDirectory):/reports" \
+      -u $(id -u):$(id -g) \
+      shiftleft/sast-scan scan --src /app --build \
+      --out_dir /reports/slCodeAnalysisLogs --no-error
+  displayName: "Perform Scan"
+  continueOnError: "true"
+
+- task: PublishBuildArtifacts@1
+  displayName: "Publish analysis logs"
+  inputs:
+    PathtoPublish: "$(Build.ArtifactStagingDirectory)/slCodeAnalysisLogs"
+    ArtifactName: "slCodeAnalysisLogs"
+    publishLocation: "Container"

@@ -1,0 +1,29 @@
+#variables:
+#  host: http://dev-korio.eastus.cloudapp.azure.com/
+#jobs:
+#- job: jmeter
+#  pool:
+#    vmImage: ubuntu-latest
+#  displayName: Run JMeter tests
+  steps:
+  - script: |
+      pwd
+      ls -al
+      sudo chmod +x jmeter/test.sh
+      sudo chmod +x jmeter/run.sh
+    displayName: 'Giving Permissions'  
+  - task: Bash@3
+    displayName: Execute JMeter tests
+    inputs:    
+      targetType: filePath
+      filePath: 'jmeter/test.sh'
+      arguments: '$PWD CartTest.jmx $(host)'
+      workingDirectory: jmeter
+      failOnStderr: false
+  - task: PublishPipelineArtifact@1
+    displayName: Publish JMeter Report
+    inputs:
+      targetPath: jmeter/report
+      htmlType: 'Jmeter'
+      JmeterReportsPath: '$(Build.SourcesDirectory)/report/index.html'
+      artifact: jmeter

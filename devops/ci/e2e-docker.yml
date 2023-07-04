@@ -1,0 +1,65 @@
+steps:
+
+- script: docker pull cypress/included:10.10.0
+  displayName: "Download Cypress"
+- script: |
+    pwd
+    ls -al 
+    npm install bcrypt
+    npm install
+    npm install express --save
+    npm install expect --save
+    npm install --save-dev cypress-localstorage-commands
+    npm install --save-dev @cypress/webpack-preprocessor
+    npm install --save-dev webpack-preprocessor
+    npm install faker --save
+    npm init -y
+    npm install --save-dev webpack webpack-cli lodash
+    npm install --save-dev webpack-preprocessor
+    npm install npx
+    npx browserslist@latest --update-db
+    npm run build
+  displayName: "Dependencies Installation"  
+- script: | 
+    #docker run --name e2eelectron -i -v $PWD:/cypress -w /cypress cypress/included:10.10.0 info --config baseUrl=http://localhost:8080
+    docker run --name e2eelectron -i -v $PWD:/cypress -w /cypress cypress/included:10.10.0 info    
+    docker cp e2eelectron:cypress/cypress/videos/ $(System.DefaultWorkingDirectory)/docker-electron
+  displayName: "Run E2E Test in Electron"
+  continueOnError: "true"
+  
+- task: PublishPipelineArtifact@0
+  displayName: 'Publish Cypress Result (Electron)'
+  inputs:
+    targetPath: 'cypress/videos'
+    artifactName: videos-docker-electron
+  condition: succeededOrFailed()
+  
+- script: |
+    #docker run --name e2efirefox -i -v $PWD:/cypress -w /cypress cypress/included:10.10.0 --browser firefox --config baseUrl=http://localhost:8080
+    docker run --name e2efirefox -i -v $PWD:/cypress -w /cypress cypress/included:10.10.0 --browser firefox
+    docker cp e2efirefox:cypress/cypress/videos/ $(System.DefaultWorkingDirectory)/docker-firefox
+  displayName: Run E2E Test in Firefox
+  continueOnError: "true"
+
+- task: PublishPipelineArtifact@0
+  displayName: 'Publish Cypress Result (FireFox)'
+  inputs:
+    targetPath: 'cypress/videos'
+    artifactName: videos-docker-firefox
+  condition: succeededOrFailed()
+  
+- script: |
+    #docker run --name e2echrome -i -v $PWD:/cypress -w /cypress cypress/included:10.10.0 --browser chrome --config baseUrl=http://localhost:8080
+    docker run --name e2echrome -i -v $PWD:/cypress -w /cypress cypress/included:10.10.0 --browser chrome
+    docker cp e2echrome:cypress/cypress/videos/ $(System.DefaultWorkingDirectory)/docker-chrome
+  displayName: Run E2E Test in Chrome
+  continueOnError: "true"
+
+- task: PublishPipelineArtifact@0
+  displayName: 'Publish Cypress Docker videos (chrome)'
+  inputs:
+    targetPath: 'cypress/videos'
+    artifactName: videos-docker-chrome
+  condition: succeededOrFailed()    
+  #displayName: "Docker E2E Testing"
+  #continueOnError: "true"

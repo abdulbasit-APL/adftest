@@ -1,0 +1,207 @@
+steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '16.x'
+      displayName: 'Install Node.js'
+    - script: |
+        sudo apt install git lynx
+        sudo git --version
+        sudo mkdir -p /mnt/korio/UM-React
+        cd /mnt/korio/UM-React/
+        sudo git clone -b QA 'https://abdulbasit-APL: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@github.com/korio-clinical/UM-React.git'
+        cd /mnt/korio/UM-React/
+        sudo pwd
+        sudo ls -al
+        sudo pwd
+        cd UM-React
+        sudo ls -al
+        sudo rm -rf .env
+        sudo ls -al
+        #sudo echo "REACT_APP_API_URL="http://localhost:8080/api/v1"" >> .env
+        #sudo cat > .env << 'EOL' REACT_APP_API_URL="http://localhost:8080/api/v1" EOL
+        sudo cp .env.ado .env
+        cat .env
+        sudo ls -al
+        sudo node_modules package-lock.json
+        sudo npm cache clean --force
+        sudo npm install --force
+        sudo npm run build
+        sudo ls -al
+        sudo pwd
+        sudo cp -rf build /mnt/korio/UM-React/
+        sudo ls -al /mnt/korio/UM-React/
+        sudo ls -al /mnt/korio/UM-React/build
+      displayName: 'Front End Setup'  
+    - script: |
+        pwd
+        sudo ls -al
+        sudo cat > .env << 'EOL' 
+        NODE_ENV='development'
+        APP_BASE_URL="localhost:8080"
+        PORT='8080'
+        MONGO_CONNECTION_STRING='mongodb+srv://apldb:apldatabase@aplcluster.cdowlfc.mongodb.net/korio'
+        ALLOWED_ORIGINS='*'
+        TENANT_ID='asdD'
+        CLIENT_ID='asd'
+        AUDIENCE='asdasdsa'
+        JWT_SECRET_KEY="Ux7EHFtfGNd0FtSQfzl5e3rAv1zl7hxV"
+        TEMP_PASSWORD="xgAhYaDHVc"
+        EOL
+        ls -al
+        pwd
+        sudo cat .env
+      displayName: 'Setting Up Env BE'  
+    - script: |        
+        npm install
+        npm run swagger-autogen
+        npm run build
+        #npm run test
+        pwd
+        sudo ls -al
+      displayName: 'Dependencies Installation'
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(System.DefaultWorkingDirectory)/$(webappname)'
+      inputs:
+        SourceFolder: '$(system.defaultworkingdirectory)'
+        TargetFolder: '$(System.DefaultWorkingDirectory)/$(webappname)'
+    - script: |
+        sudo pwd
+        sudo ls -al
+        sudo apt-get install -y netcat telnet git lynx
+        sudo chmod +x apachescript.bash
+        sudo ls -al
+        sudo bash apachescript.bash
+        sudo systemctl status apache2
+        sudo nc -w 2 -v localhost 80 </dev/null; echo $?
+        sudo curl http://localhost:80
+        #sudo curl http://localhost:8080
+      displayName: 'Web Server Setup'  
+    - script: |
+        sudo docker pull cypress/included:10.10.0
+        sudo mkdir -p /mnt/korio/UM-Node/
+        sudo mkdir -p /mnt/korio/UM-React
+        sudo cp -rf $(System.DefaultWorkingDirectory)/$(webappname)/ /mnt/korio/UM-Node
+        cd /mnt/korio/UM-Node
+        cd korio
+        sudo cp -rf * ../
+        sudo ls -al
+        pwd
+        ls -al korio
+        sudo apt-get install -y netcat telnet git wget
+        pwd
+        sudo npm install express --save
+        sudo npm install expect --save
+        sudo npm install -g cypress
+        sudo npm install --save-dev cypress-localstorage-commands
+        sudo npm install --save-dev @cypress/webpack-preprocessor
+        sudo npm install --save-dev webpack-preprocessor
+        sudo npm install faker --save
+        sudo npm init -y
+        sudo npm install -g pm2
+        sudo npm install pm2@latest -g
+        sudo pm2 update
+        sudo npm install --save-dev webpack webpack-cli lodash
+        sudo npm install --save-dev webpack-preprocessor
+        sudo npm install npx
+        sudo npx browserslist@latest --update-db
+        sudo npm audit fix --force
+        sudo mkdir -p /mnt/logs/app/be
+        sudo pm2 start "npm run start" --name "Backend"
+        #sudo pm2 start ecosystem.config.js
+        sudo pm2 list
+        hostname
+        echo "$HOSTNAME"
+        printf "%s\n" $HOSTNAME
+        hostname
+        cat /etc/hostname
+        sudo hostname localhost
+        hostname
+        sudo echo "127.0.0.1 localhost" | sudo tee -a /etc/hosts
+        sudo pm2 list
+        #sudo pm2 logs
+        sudo tail -n 400 /root/.pm2/logs  >> "be.log"
+        #sudo tail -n 400 /root/.pm2/pm2.log >> "be.log"
+        #sudo cat be.log
+        sudo lsof -i -P -n | grep LISTEN
+        sudo ss -tulpn
+        sudo netstat -ltnp | grep -w ':8080'
+        sudo netstat -ltnp | grep -w ':8084'
+        sudo netstat -ltnp | grep -w ':80'
+        sudo lsof -i :8080
+        sudo lsof -i :80
+        sudo sleep 100
+        sudo lsof -i -P -n | grep LISTEN
+        sudo nc -w 2 -v localhost 8080 </dev/null; echo $?
+        #sudo npx cypress run --browser chrome
+        #cypress run --browser chrome
+        #sudo docker run --name e2eelectron -i -v $PWD:/cypress -w /cypress cypress/included:10.10.0 info
+        sudo nc -w 2 -v localhost 8080 </dev/null; echo $?
+        sudo ls -al
+        #sudo npx cypress run --browser chrome
+        #sudo curl -v telnet://localhost:8080
+        sudo curl http://localhost:8080
+        sudo curl http://localhost:80
+        sudo ps -ef | grep apache2
+        sudo curl http://localhost
+        sudo systemctl status apache2
+        sudo ps -ef | grep httpd
+        sudo ps -ef | grep PM2
+        sudo pm2 describe Backend
+        sudo curl http://localhost/api/v1
+        sudo curl -I http://localhost
+        sudo sleep 3
+        sudo cat /etc/apache2/sites-available/korio.conf
+        sudo ps -ef | grep httpd
+        sudo lynx -head -dump http://localhost
+        sudo wget http://localhost
+        sudo curl http://localhost:8080
+        #sudo tail -n 400 /mnt/korio/UM-React/error_log >> "apacheerror.log"
+        #sudo cat apacheerror.log
+        #sudo sudo tail -n 400 //mnt/korio/UM-React/access_log >> "apacheaccess.log"
+        #sudo cat apacheaccess.log
+        #sudo docker run --name e2eelectron --network=host --ipc=host -i -v $PWD:/cypress -w /cypress cypress/included:10.10.0 info
+        #sudo docker run --name e2eelectron --network=host --ipc=host -i -v $PWD:/cypress -w /cypress cypress/included:10.10.0 info --config baseUrl=http://localhost:80
+      displayName: 'Setting Up Docker Environment'
+    - script: |
+        pwd
+        sudo ls -al
+        pwd
+        sudo ls -al cypress
+        sudo npm install --save-dev cypress-localstorage-commands
+        docker run --name e2eelectron --network=host --ipc=host -i -v $PWD:/cypress -w /cypress cypress/included:10.10.0 info --config baseUrl=http://localhost
+        docker cp e2eelectron:cypress/cypress/videos/ $(System.DefaultWorkingDirectory)/docker-electron
+      displayName: "Run E2E Test in Electron"
+      continueOnError: "false"
+  
+    - task: PublishPipelineArtifact@0
+      displayName: 'Publish Cypress Result (Electron)'
+      inputs:
+        targetPath: 'cypress/videos'
+        artifactName: videos-docker-electron
+      condition: succeededOrFailed()
+  
+    #- script: |
+    #    docker run --name e2efirefox --network=host --ipc=host -i -v $PWD:/cypress -w /cypress cypress/included:10.10.0 --browser firefox --config baseUrl=http://localhost
+    #    docker cp e2efirefox:cypress/cypress/videos/ $(System.DefaultWorkingDirectory)/docker-firefox
+    #  displayName: Run E2E Test in Firefox
+    #  continueOnError: "true"
+
+  #  - task: PublishPipelineArtifact@0
+  #    displayName: 'Publish Cypress Result (FireFox)'
+  #    inputs:
+  #      targetPath: 'cypress/videos'
+  #      artifactName: videos-docker-firefox
+  #    condition: succeededOrFailed()
+  
+  #  - script: |
+  #      docker run --name e2echrome --network=host --ipc=host -i -v $PWD:/cypress -w /cypress cypress/included:10.10.0 --browser chrome --config baseUrl=http://localhost
+  #      docker cp e2echrome:cypress/cypress/videos/ $(System.DefaultWorkingDirectory)/docker-chrome
+  #    displayName: 'Run E2E Test in Chrome'
+  #    continueOnError: "true"
+
+ #   - task: PublishPipelineArtifact@0
+  #    displayName: 'Publish Cypress Docker videos (chrome)'
+  #    inputs:
+  #      targetPath: 'cypress/videos'
+  #      artifactName: videos-docker-chrome
+  #    condition: succeededOrFailed()

@@ -1,0 +1,37 @@
+# Include branch name to prevent PR builds consuming version numbers from master builds
+#name: $(Build.SourceBranchName)-1.0$(Rev:.r)
+
+#trigger:
+#  batch: false
+#  branches:
+#    include:
+#      - master
+#  paths:
+#    exclude:
+#      - README.md
+
+#pool:
+#  vmImage: 'Ubuntu-16.04'
+
+#variables:
+#  azureSubscriptionEndpoint: {SUBSCRIPTION}
+#  azureContainerRegistry: {REGISTRY}
+#  repositoryName: '$(azureContainerRegistry)/{SERVICE}'
+
+steps:
+- script: |
+    #if [ "$(Build.SourceBranchName)" == "master" ]; then
+      echo "Compiling for master build $(prId)"
+      #BuildNumber=$(echo "$(Build.BuildNumber)" | cut -d "-" -f 2)
+      #echo "##vso[task.setvariable variable=version]$BuilNumber"
+      #echo "##vso[task.setvariable variable=imageName]$(repositoryName):$version"
+    #elif [ -n "$(System.PullRequest.PullRequestId)" ]; then
+      echo "Compiling for PR build"
+      #version=0.$(System.PullRequest.PullRequestId).$(build.buildId)
+      #echo "##vso[task.setvariable variable=version]$version"
+      #echo "##vso[task.setvariable variable=imageName]$(repositoryName):$version-pr"
+    #else
+      echo "Branch is not for master nor a pull request"
+      #exit 1
+    fi
+  displayName: 'Validating PR Builds'

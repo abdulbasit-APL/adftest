@@ -1,0 +1,7 @@
+steps:
+          - task: WhiteSource@21
+            inputs:
+              cwd: '$(System.DefaultWorkingDirectory)'
+              extensions: '.json .js .ts .css .html'
+              projectName: '$(webappname)'
+              continueOnError: true

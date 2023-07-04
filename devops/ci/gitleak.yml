@@ -1,0 +1,12 @@
+steps:
+          - script: |
+              rm -rf .git
+          - task: Gitleaks@2
+            inputs:
+              scanlocation: '$(Build.SourcesDirectory)'
+              configtype: 'predefined'
+              failOnIssues: 'false'
+              taskfail: 'false'
+              predefinedconfigfile: 'GitleaksUdmCombo.toml'
+              reportformat: 'sarif'
+              continueOnError: "true"

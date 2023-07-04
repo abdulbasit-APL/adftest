@@ -1,0 +1,29 @@
+#steps:
+steps:
+- task: MicrosoftSecurityDevOps@1
+  displayName: 'Run Microsoft Security DevOps'
+  inputs:
+    ArtifactName: 'MS_CodeAnalysisLogs'
+#- task: CredScan@2
+#- task: SdtReport@1
+#  inputs:
+#    TsvFile: false
+#    AllTools: false
+#    BinSkim: false
+#    CredScan: true
+#    MSRD: false
+#    RoslynAnalyzers: false
+#    TSLint: false
+#    ToolLogsNotFoundAction: 'Standard'
+#- task: PublishSecurityAnalysisLogs@2
+#  inputs:
+#    ArtifactName: 'MS_CodeAnalysisLogs'
+#    ArtifactType: 'Container'
+#    AllTools: false
+#    AntiMalware: false
+#    BinSkim: false
+#    CredScan: true
+#    MSRD: false
+#    RoslynAnalyzers: false
+#    TSLint: false
+#    ToolLogsNotFoundAction: 'Standard'

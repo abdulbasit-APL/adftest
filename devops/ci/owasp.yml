@@ -1,0 +1,74 @@
+steps:
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '18.x'
+    displayName: 'Install Node.js'
+  - script: |
+      rm -rf node_modules package-lock.json
+      npm cache clean --force
+      npm install --force
+      #npm install
+      #rm package-lock.json
+      #npm install
+        #npm run build
+        #npm run test
+    displayName: 'npm install'
+  - task: dependency-check-build-task@6
+    displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
+    inputs:
+      projectName: '$(webappname)'
+      #scanPath: '$(Build.SourcesDirectory)'
+      scanPath: $(System.DefaultWorkingDirectory)
+      failOnCVSS: 100 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
+      reportsDirectory: '$(System.DefaultWorkingDirectory)/Reports'
+      reportFilename: 'dependencyCheckReport.html'
+      #format: 'HTML, JUNIT' # Format of scan result report
+      format: 'ALL'
+      #suppressionPath: '$(Build.SourcesDirectory)/suppression-file.xml' # File where all the suppressed vulnerabilities are defined
+      enableExperimental: true # Enable experimental file type analyzers
+      additionalArguments: '--scan $(Build.SourcesDirectory)' # Additional folder to scan
+      dependencyCheckVersion: '7.2.1'
+      continueOnError: true
+
+  #- task: PublishTestResults@2
+  #  displayName: 'Publish Dependency Check Results'
+  #  inputs:
+  #    testResultsFormat: 'HTML'
+  #    testResultsFiles: 'dependency-check-report.html'
+
+  - task: CopyFiles@2
+    displayName: 'Copy Files to: $(System.DefaultWorkingDirectory)'
+    inputs:
+      SourceFolder: '$(System.DefaultWorkingDirectory)/Reports'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: OWASP Report'
+    inputs:
+      ArtifactName: 'OWASP Report'
+      testResultsFiles: 'dependency-check-report.html'
+      searchFolder: '/home/vsts/work/1/s/Reports/dependency-check-report.html'
+      testRunTitle: 'Dependency Check'
+  #- task: SendEmail@1
+  #  displayName: 'Sending an E-Mail' 
+  #  inputs:
+  #    To: 'abdulbasit@analytics.com.pk'
+  #    From: 'devops@analytics.com.pk'
+  #    Subject: 'OWASP Report'
+  #    Body: 'PFA'
+  #    BodyAsHtml: true
+  #    AddAttachment: true
+  #    Attachment: '/home/vsts/work/1/s/Reports/dependency-check-report.html'    
+  
+  #- task: PublishTestResults@2
+  #  displayName: 'OWASP Dependency Check'
+  #  inputs:
+  #    testResultsFormat: 'HTML'
+  #    testResultsFiles: 'dependency-check-report.html'
+      #testResultsFiles: 'dependency-check-junit.xml'
+      #searchFolder: '$(Common.TestResultsDirectory)'
+  #    searchFolder: '$(System.DefaultWorkingDirectory)/TestResults/dependency-check/'
+      #searchFolder: '/home/vsts/work/1/TestResults/dependency-check/dependency-check-report.html'
+   #   testRunTitle: 'Dependency Check'
+      #buildConfiguration: '$(BuildConfiguration)'

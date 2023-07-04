@@ -1,0 +1,63 @@
+          steps:
+          - task: DownloadPipelineArtifact@1
+            displayName: 'Download Pipeline Artifact'
+            #download: 'current
+            inputs:
+              targetPath: $(Build.ArtifactStagingDirectory)/**
+              #${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
+              #    artifactName: '$(webappname).zip'
+              #    #echo "Source branch '(variables['Build.SourceBranchName']' is allowed to deploy on Dev Env"
+              #${{ else }}:
+              #    artifactName: 'dev'
+                  #echo "Source branch '$(Build.SourceBranchName)' is not allowed to deploy code on Dev Env"
+              runVersion: 'latest'
+              downloadPath: '$(System.DefaultWorkingDirectory)'
+              #buildType: 'current'
+          - script: |
+              pwd
+              ls -al
+              echo "####################Copying Files to Application Server########################"
+              echo "Creating App Folder with date format"
+              sudo rm -rf /mnt/CICD/korio/FE/pre-deployments/app*
+              sudo mkdir -p /mnt/CICD/korio/FE/pre-deployments/app-$(date +"%d-%m-%Y")
+              echo "Changing Directory to Pre-Deployment"
+              sudo cd /mnt/CICD/korio/FE/pre-deployments
+              echo "Removing Existing UM-React Folder"
+              sudo rm -rf /mnt/CICD/korio/FE/pre-deployments/UM-React
+              echo "Creating UM-React Folder"
+              sudo mkdir -p /mnt/CICD/korio/FE/pre-deployments/UM-React
+              echo "Checking Existing path"
+              sudo pwd
+              echo "Listing Files in Current Directory"
+              sudo ls -al /mnt/CICD/korio/FE/pre-deployments/
+              echo "Listing Files in Drop Folder"
+              sudo ls -al '$(System.DefaultWorkingDirectory)/drop/'
+              echo "Copying Files to App Folder"
+              sudo cp -rf '$(System.DefaultWorkingDirectory)/drop/$(webappname).zip' /mnt/CICD/korio/FE/pre-deployments/app-$(date +"%d-%m-%Y")
+              echo "Copying UM-React Folder"
+              sudo cp -rf '$(System.DefaultWorkingDirectory)/drop/$(webappname).zip' /mnt/CICD/korio/FE/pre-deployments/UM-React/
+              echo "Checking Current Directory. After Copy Data"
+              sudo pwd
+              echo "After Copying Data to UM-React Folder. Listing All Files"
+              sudo ls -al
+              sudo ls -al /mnt/CICD/korio/FE/pre-deployments/UM-React/
+              echo "####################Deploying Files to Application Directory########################"
+              sudo ls -al /scripts/deployment-script-fe
+              sudo /scripts/deployment-script-fe
+              echo echo "####################Verify the deployment on SQA Environment########################"
+              sudo rm -rf /mnt/home/debian/azagent/_work
+              #echo "Starting deployment on Dev Environment"
+              #curl -T '$(output.directory)/$(artifact.name)' 'https://$(server.dev.user):$(server.dev.password)@$(server.dev.host)/manager/text/deploy?path=/$(artifact.azure.name)&update=true'
+              #displayName: 'Deploying app'
+              
+            displayName: "Deploying App to target Machine"  
+
+          #- task: AzureWebApp@1
+          #  inputs:
+          #    #azureSubscription: '$(subscription)'
+          #    #azureSubscription: 'korio-platform-dev'
+          #    appType: 'webApp'
+          #    appName: '$(webappname)'
+          #    package: '$(System.DefaultWorkingDirectory)/$(webappname).zip'
+          #    #customWebConfig: '-Handler iisnode -NodeStartFile index.js -appType node'
+          #    deploymentMethod: 'zipDeploy'

@@ -1,0 +1,44 @@
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
+  displayName: 'Install Node.js'
+- task: SonarCloudPrepare@1
+  displayName: 'Prepare analysis configuration'
+  inputs:
+    SonarCloud: 'SonarCloud'
+    organization: 'korio-clinical'
+    sonar.branch.name: 'QA'
+    #sonar.branch.target: 'main'
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: 'korio-clinical_FE-Reusable-Components'
+    cliProjectName: 'FE-Reusable-Components'
+    #cliSources: 'src'
+    extraProperties: |
+      # Additional properties that will be passed to the scanner, 
+      # Put one key=value per line, example:
+      # sonar.exclusions=**/*.bin
+      #sonar.projectKey=Korio-BE-QA
+      #sonar.projectName=Korio-BE-QA
+      sonar.verbose=true
+      #sonar.tests=src
+      #sonar.test.inclusions=**/testing/**,**/*.spec.ts
+      #sonar.typescript.lcov.reportPaths=coverage/lcov.info
+
+- script: |
+    npm install --quiet
+    rm -rf node_modules package-lock.json
+    npm cache clean --force
+    npm install --force
+    npm install
+    #npm run test -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessNoSandbox
+  displayName: 'npm install and build'
+
+- task: SonarCloudAnalyze@1
+  displayName: 'Run SonarCloud analysis'
+
+- task: SonarCloudPublish@1
+  displayName: 'Publish results on build summary'
+  inputs:
+    pollingTimeoutSec: '300'

@@ -1,0 +1,8 @@
+steps:
+- task: ssl-labs-test@1
+  inputs:
+    hostname: 'https://sqa.korioclinical.com/'
+    freshScan: true
+    publishScanResults: true
+    #enableVerification: true
+    enableExpirationAlert: true

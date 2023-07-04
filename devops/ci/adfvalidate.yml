@@ -1,0 +1,42 @@
+steps:
+      #- checkout: self
+      #  displayName: 'Checkout ADF repo'
+      #  clean: true
+      #  path: $(DevAdfName)
+      
+      # Installs Node and the npm packages saved in your package.json file in the $(adf_package_file_path)
+      - task: NodeTool@0
+        displayName: 'Install Node.js'
+        inputs:
+          versionSpec: '18.x'
+      
+      - task: Npm@1
+        displayName: 'Install npm package'
+        inputs:
+          command: 'install'
+          workingDir: '$(Build.Repository.LocalPath)/$(adf_package_file_path)/'
+          verbose: true
+
+      # ADF - Validates all on adf-code.
+      - task: Npm@1
+        displayName: 'Validate Source code'
+        inputs:
+          command: 'custom'
+          workingDir: '$(Build.Repository.LocalPath)/$(adf_package_file_path)/'
+          customCommand: 'run build validate $(Build.Repository.LocalPath)/adf-code $(BuildAdfResourceId)'
+      
+      # ADF - Generate ARM template
+      - task: Npm@1
+        displayName: 'Generate ARM template'
+        inputs:
+          command: 'custom'
+          workingDir: '$(Build.Repository.LocalPath)/$(adf_package_file_path)/'
+          customCommand: 'run build export $(Build.Repository.LocalPath)/adf-code $(BuildAdfResourceId) "$(CommonPublishArmTemplateName)"'
+
+      # Publish the artifact
+      - task: PublishPipelineArtifact@1
+        displayName: 'Publish ARM tempate'
+        inputs:
+          targetPath: '$(Build.Repository.LocalPath)/$(adf_package_file_path)/$(CommonPublishArmTemplateName)'
+          artifact: '$(CommonPublishArmTemplateName)'
+          publishLocation: 'pipeline'

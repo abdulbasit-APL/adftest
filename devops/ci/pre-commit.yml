@@ -1,0 +1,20 @@
+steps:
+  #- task: AntiMalware@4
+  #  displayName: 'Run Antivirus on Source'
+  #  inputs:
+  #    FileDirPath: $(Build.SourcesDirectory)
+  #  condition: succeededOrFailed()
+  #  continueOnError: True
+  #- task: AntiMalware@4
+  #  displayName: Run Antivirus on Binaries
+  #  inputs:
+  #    FileDirPath: $(Build.BinariesDirectory)
+  #  condition: succeededOrFailed()
+  #  continueOnError: True
+  - script: |
+      pip install pre-commit
+      pre-commit --version
+      #pre-commit run --all-files
+      pre-commit run --all-files --show-diff-on-failure
+    displayName: Execute pre-commit
+    continueOnError: true

@@ -1,0 +1,220 @@
+# Testing CICD Pipeline for Testing
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+      - QA
+      - prod
+      #- master
+      #- release/*
+pr:
+- master
+- develop/*
+- QA/*
+- prod/*
+- main/*
+
+pool:
+  vmImage: "ubuntu-latest"
+  container: shiftleft/sast-scan:latest
+
+parameters:
+- name: agentPoolName
+  displayName: "Agent Pool Name"
+  type: string
+  default: "ubuntu-latest"
+- name: allowedSourceBranchName
+  displayName: Allowed Source branch name
+  type: string
+  default: "refs/heads/main"
+
+variables:
+
+  - ${{ if eq(variables['build.SourceBranchName'], 'develop') }}:
+      - group: adf-dev
+  - ${{ if eq(variables['build.SourceBranchName'], 'main') }}:
+      - group: adf-pre-prod
+  - name: adf_code_path
+    value: "$(Build.SourcesDirectory)/data_ops/adf"
+  - name: WorkspaceArmTemplateDirectory
+    value: $(Pipeline.Workspace)/$(CommonPublishArmTemplateName)
+  - name: adf_package_file_path
+    value: "$(Build.SourcesDirectory)/build/"
+
+
+stages:  
+  
+  
+  - stage: 'pre_commit'
+    displayName: 'pre-commit hook Validation'
+    jobs:
+      - job: pre_commit
+        displayName: 'Pre-Commit Hook Validation'
+        variables:
+          PRE_COMMIT_HOME: $(Pipeline.Workspace)/pre-commit-cache
+        steps:
+        - template: devops/ci/pre-commit.yml
+  
+        
+  - stage: 'PreDeployment'
+    displayName: 'Security Code Analysis'
+    jobs:
+      - job: risk_report
+        displayName: 'Risk Report'
+        continueOnError: true
+        pool:
+          vmImage: "ubuntu-latest"
+        steps:
+        - template: devops/ci/WhiteSource.yml                
+      
+      - job: 'Gitleak_Scan'
+        displayName: 'Gitleak Report'
+        condition: succeededOrFailed()
+        continueOnError: true
+        steps:
+        - template: devops/ci/gitleak.yml
+      
+      - job: 'lint_tests'
+        displayName: 'super-linter validation'
+        continueOnError: true
+        steps:
+        - template: devops/ci/linter.yml
+  
+  - stage: 'Virus_Scan'
+    displayName: 'Virus Scan'
+    #dependsOn: 'PreDeployment'
+    #condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - job: 'MS_Scan'
+        pool:
+          vmImage: 'ubuntu-latest'
+        displayName: 'Clamav Scanning'
+        continueOnError: true
+        steps:
+        - template: devops/ci/MS.yml
+      
+      - job: 'MS_Scanner'
+        displayName: 'Microsoft Credential Scanner'
+        
+        pool:
+          vmImage: "windows-latest"
+        steps:
+        
+        - template: devops/ci/MS_Scan.yml
+      
+      - job: 'shift_Scan'
+        pool:
+          vmImage: 'ubuntu-latest'
+        displayName: 'Shiftleft Scanning'
+        continueOnError: true
+        steps:
+        - template: devops/ci/shiftleft.yml  
+        
+  - stage: 'Validate_ADF_Code'
+    pool:
+      vmImage: 'ubuntu-latest'
+    displayName: 'Validating the ADF Code'
+    dependsOn: 'PreDeployment'
+    jobs:
+      #- job: 'Building_Artifact'
+      #  displayName: 'Building The Artifact'
+      #  steps:
+      #  - template: devops/ci/npm-ci.yml
+      - job: 'Building_Artifact'
+        displayName: 'ADF - ARM template'
+        steps:
+        - template: devops/ci/adfvalidate.yml  
+      
+  #- stage: 'Sonar_Scanner'
+  #  displayName: 'Static Code Analysis'
+  #  condition: succeeded('Build_Artifact')
+  #  jobs:
+  #    - job: 'sonar_scan'
+        
+  #      displayName: 'SonarCloud Scan'
+  #      steps:
+  #      - template: devops/ci/sonarcloud.yml    
+  
+  
+  - stage: 'Post_Build_Scan'
+    displayName: 'Post Build Scan'
+    dependsOn: 'Validate_ADF_Code'
+    condition: succeeded('Validate_ADF_Code')
+    jobs:
+    - job: 'OWASP_Scan'
+      displayName: 'OWASP Dependency Check scan of third-party dependencies'
+      steps:
+      - template: devops/ci/owasp.yml
+    - job: 'OWASP_Dependency_check'
+      displayName: 'OWASP cross-platform Dependency Checker'
+      steps:
+      - template: devops/ci/x-plat.yml
+  
+         
+  #- stage: 'QualityCheckStage'
+  #  displayName: 'Quality Check Stage'
+  #  dependsOn: 'Build_Artifact'
+  #  condition: succeeded('Build_Artifact')
+  #  jobs:
+  #    - job: 'KICSJob'
+  #      displayName: Run KICS Scan
+  #      steps:
+  #      - template: 'devops/ci/kics.yml'
+  #    - job: 'YelpDetectSecretsJob'
+  #      displayName: 'Run YELP Detect-Secrets Scan'
+  #      steps:
+  #      - template: 'devops/ci/yelp.yml'
+      
+  
+  - stage: 'Build_Validation'
+    displayName: 'External Validation'
+    #dependsOn: 'Post_Build_Scan'
+    condition: succeeded('Validate_ADF_Code')
+    jobs:
+      - job: waitForValidation
+        displayName: 'Wait for external validation'
+        pool: 'server'
+        timeoutInMinutes: 4320 # job times out in 3 days  
+        steps:
+        - template: devops/cd/validation.yml      
+  
+  - stage: 'dev_branch_policy_build_validation'
+    displayName: "Branch Policy Build Validation"
+    #dependsOn: 'Deploy_to_Dev'
+    jobs:
+      - job: source_branch_validation
+        displayName: Source Branch Validation
+        steps:
+        - template: devops/ci/devbranchvalidation.yml
+  - stage: 'Deploy_to_Dev'
+    displayName: 'Dev Environment'
+    dependsOn:
+    - Build_Validation
+    - Validate_ADF_Code
+    - dev_branch_policy_build_validation
+    #- DependentJob
+    condition: |
+      and
+       (
+        eq(dependencies.Build_Validation.result, 'Succeeded'),
+        eq(dependencies.Validate_ADF_Code.result, 'Succeeded'),
+        eq(dependencies.dev_branch_policy_build_validation.result, 'Succeeded'),
+        and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+       )
+    
+    jobs:
+    - deployment: 'Deploy_Artifact_To_Dev'
+      displayName: 'Deploy_Artifact To Dev'
+      #environment: 'Dev'
+      environment:
+        name: 'Dev'
+        #resourceType: 'VirtualMachine'
+      #resourceType: VirtualMachine
+      pool: 
+        vmImage: 'ubuntu-latest'
+      strategy:
+        runOnce:
+          deploy:
+             steps:
+             - template: devops/cd/dev.yml

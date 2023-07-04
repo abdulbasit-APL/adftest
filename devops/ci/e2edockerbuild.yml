@@ -1,0 +1,21 @@
+steps:
+- script: |
+    pwd
+    ls -al 
+    npm install bcrypt
+    npm install
+    npm install express --save
+    npm install expect --save
+    npm install --save-dev cypress-localstorage-commands
+    npm install --save-dev @cypress/webpack-preprocessor
+    npm install --save-dev webpack-preprocessor
+    npm install faker --save
+    npm init -y
+    npm install --save-dev webpack webpack-cli lodash
+    npm install --save-dev webpack-preprocessor
+    npm install npx
+    npx browserslist@latest --update-db
+    docker pull cypress/included:10.10.0
+    docker build -f Dockerfile -t e2docker .
+    docker run --name e2eelectron -i -v $PWD:/cypress -w /cypress cypress/included:10.10.0 info --config baseUrl=http://localhost:8080
+  displayName: Build docker image
