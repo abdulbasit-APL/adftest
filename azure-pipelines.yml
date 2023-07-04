@@ -146,10 +146,10 @@ stages:
       displayName: 'OWASP Dependency Check scan of third-party dependencies'
       steps:
       - template: devops/ci/owasp.yml
-    - job: 'OWASP_Dependency_check'
-      displayName: 'OWASP cross-platform Dependency Checker'
-      steps:
-      - template: devops/ci/x-plat.yml
+    #- job: 'OWASP_Dependency_check'
+    #  displayName: 'OWASP cross-platform Dependency Checker'
+    #  steps:
+    #  - template: devops/ci/x-plat.yml
   
          
   #- stage: 'QualityCheckStage'
