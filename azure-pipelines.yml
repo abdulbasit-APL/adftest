@@ -38,7 +38,9 @@ variables:
   - name: adf_code_path
     value: "$(Build.SourcesDirectory)/data_ops/adf"
   - name: WorkspaceArmTemplateDirectory
-    value: $(Pipeline.Workspace)/$(CommonPublishArmTemplateName)
+    value: "$(Pipeline.Workspace)/$(CommonPublishArmTemplateName)" 
+  - name: BuildAdfResourceId
+    value: "/subscriptions/$(azure_subscription_id)/resourceGroups/$(resource_group_name)/providers/Microsoft.DataFactory/factories/$(azure_data_factory_name)" 
   - name: adf_package_file_path
     #value: "$(Build.SourcesDirectory)/build/"
     value: "$(Build.Repository.LocalPath)/build/"
