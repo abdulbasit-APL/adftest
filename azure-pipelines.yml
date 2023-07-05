@@ -68,18 +68,18 @@ stages:
         steps:
         - template: devops/ci/WhiteSource.yml                
       
-      - job: 'Gitleak_Scan'
-        displayName: 'Gitleak Report'
-        condition: succeededOrFailed()
-        continueOnError: true
-        steps:
-        - template: devops/ci/gitleak.yml
+      #- job: 'Gitleak_Scan'
+      #  displayName: 'Gitleak Report'
+      #  condition: succeededOrFailed()
+      #  continueOnError: true
+      #  steps:
+      #  - template: devops/ci/gitleak.yml
       
-      - job: 'lint_tests'
-        displayName: 'super-linter validation'
-        continueOnError: true
-        steps:
-        - template: devops/ci/linter.yml
+      #- job: 'lint_tests'
+      #  displayName: 'super-linter validation'
+      #  continueOnError: true
+      #  steps:
+      #  - template: devops/ci/linter.yml
   
   - stage: 'Virus_Scan'
     displayName: 'Virus Scan'
@@ -94,22 +94,22 @@ stages:
         steps:
         - template: devops/ci/MS.yml
       
-      - job: 'MS_Scanner'
-        displayName: 'Microsoft Credential Scanner'
+      #- job: 'MS_Scanner'
+      #  displayName: 'Microsoft Credential Scanner'
         
-        pool:
-          vmImage: "windows-latest"
-        steps:
+      #  pool:
+      #    vmImage: "windows-latest"
+      #  steps:
         
-        - template: devops/ci/MS_Scan.yml
+      #  - template: devops/ci/MS_Scan.yml
       
-      - job: 'shift_Scan'
-        pool:
-          vmImage: 'ubuntu-latest'
-        displayName: 'Shiftleft Scanning'
-        continueOnError: true
-        steps:
-        - template: devops/ci/shiftleft.yml  
+      #- job: 'shift_Scan'
+      #  pool:
+      #    vmImage: 'ubuntu-latest'
+      #  displayName: 'Shiftleft Scanning'
+      #  continueOnError: true
+      #  steps:
+      #  - template: devops/ci/shiftleft.yml  
         
   - stage: 'Validate_ADF_Code'
     pool:

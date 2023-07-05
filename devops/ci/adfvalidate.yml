@@ -5,11 +5,20 @@ steps:
       #  path: $(DevAdfName)
       
       # Installs Node and the npm packages saved in your package.json file in the $(adf_package_file_path)
+      
+      #- task: NodeTool@0
+      #  displayName: 'Install Node.js'
+      #  inputs:
+      #    versionSpec: '18.x'
       - task: NodeTool@0
-        displayName: 'Install Node.js'
         inputs:
           versionSpec: '18.x'
-      
+        displayName: 'Install Node.js'
+      - script: |
+          ls -al
+          pwd
+          npm cache clean --force
+        
       - task: Npm@1
         displayName: 'Install npm package'
         inputs:
