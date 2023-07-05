@@ -36,7 +36,7 @@ variables:
   - ${{ if eq(variables['build.SourceBranchName'], 'main') }}:
       - group: adf-pre-prod
   - name: adf_code_path
-    value: "$(Build.SourcesDirectory)/data_ops/adf"
+    value: "$(Build.SourcesDirectory)/data_ops"
   - name: WorkspaceArmTemplateDirectory
     value: "$(Pipeline.Workspace)/$(CommonPublishArmTemplateName)" 
   - name: BuildAdfResourceId

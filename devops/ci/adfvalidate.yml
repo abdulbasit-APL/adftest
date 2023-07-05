@@ -37,7 +37,7 @@ steps:
         inputs:
           command: 'custom'
           workingDir: '$(adf_package_file_path)/'
-          customCommand: 'run build validate $(Build.SourcesDirectory)/adf-code $(BuildAdfResourceId)'
+          customCommand: 'run build validate $(Build.SourcesDirectory)/data_ops $(BuildAdfResourceId)'
       
       # ADF - Generate ARM template
       - task: Npm@1
