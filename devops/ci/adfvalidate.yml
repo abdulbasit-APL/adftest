@@ -37,15 +37,15 @@ steps:
         inputs:
           command: 'custom'
           workingDir: '$(adf_package_file_path)/'
-          customCommand: 'run build validate $(Build.SourcesDirectory)/adf-code $(BuildAdfResourceId)'
+          customCommand: 'run build validate $(Build.SourcesDirectory)/adf-code/adf $(BuildAdfResourceId)'
       
       # ADF - Generate ARM template
       - task: Npm@1
         displayName: 'Generate ARM template'
         inputs:
           command: 'custom'
-          workingDir: '$(Build.Repository.LocalPath)/$(adf_package_file_path)/'
-          customCommand: 'run build export $(Build.Repository.LocalPath)/adf-code $(BuildAdfResourceId) "$(CommonPublishArmTemplateName)"'
+          workingDir: '$(adf_package_file_path)/'
+          customCommand: 'run build export $(Build.SourcesDirectory)/adf-code $(BuildAdfResourceId) "$(CommonPublishArmTemplateName)"'
 
       # Publish the artifact
       - task: PublishPipelineArtifact@1
