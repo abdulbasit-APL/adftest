@@ -39,6 +39,8 @@ variables:
     value: "$(Build.SourcesDirectory)/data_ops"
   - name: WorkspaceArmTemplateDirectory
     value: "$(Pipeline.Workspace)/$(CommonPublishArmTemplateName)" 
+  - name: CommonPublishArmTemplateName
+    value: "Ancera"
   - name: BuildAdfResourceId
     value: "/subscriptions/$(azure_subscription_id)/resourceGroups/$(resource_group_name)/providers/Microsoft.DataFactory/factories/$(azure_data_factory_name)" 
   - name: adf_package_file_path
