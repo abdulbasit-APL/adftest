@@ -40,7 +40,8 @@ variables:
   - name: WorkspaceArmTemplateDirectory
     value: $(Pipeline.Workspace)/$(CommonPublishArmTemplateName)
   - name: adf_package_file_path
-    value: "$(Build.SourcesDirectory)/build/"
+    #value: "$(Build.SourcesDirectory)/build/"
+    value: "$(adf_package_file_path)/build/"
 
 
 stages:  
