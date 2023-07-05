@@ -19,10 +19,9 @@ steps:
           pwd
           ls -al $(Build.Repository.LocalPath)
           pwd
-          ls -al $(adf_package_file_path)
-          ls -al $(Build.Repository.LocalPath)/$(adf_package_file_path)/
-          ls -al $(Build.Repository.LocalPath)/
           ls -al $(Build.SourcesDirectory)/build/
+          pwd
+          ls -al $(adf_package_file_path)
           npm cache clean --force
         
       - task: Npm@1
