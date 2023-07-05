@@ -28,7 +28,7 @@ steps:
         displayName: 'Install npm package'
         inputs:
           command: 'install'
-          workingDir: '$(Build.Repository.LocalPath)/$(adf_package_file_path)/'
+          workingDir: '$(adf_package_file_path)/'
           verbose: true
 
       # ADF - Validates all on adf-code.
