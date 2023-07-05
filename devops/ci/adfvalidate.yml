@@ -36,8 +36,8 @@ steps:
         displayName: 'Validate Source code'
         inputs:
           command: 'custom'
-          workingDir: '$(Build.Repository.LocalPath)/$(adf_package_file_path)/'
-          customCommand: 'run build validate $(Build.Repository.LocalPath)/adf-code $(BuildAdfResourceId)'
+          workingDir: '$(adf_package_file_path)/'
+          customCommand: 'run build validate $(Build.SourcesDirectory)/adf-code $(BuildAdfResourceId)'
       
       # ADF - Generate ARM template
       - task: Npm@1
