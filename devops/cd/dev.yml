@@ -9,11 +9,7 @@ steps:
                 workingDirectory: '$(WorkspaceArmTemplateDirectory)'
               ### ADF Pre-Deployment - Stop ADF Triggers ###
               #https://docs.microsoft.com/en-us/azure/data-factory/continuous-integration-deployment#script  
-              - task: Bash@3
-                inputs:
-                  targetType: 'inline'
-                  script: |
-                    git checkout main
+             
               
               - task: NodeTool@0
                 inputs:
@@ -34,7 +30,7 @@ steps:
                 inputs:
                   azureSubscription: '$(azure_service_connection_name)'
                   ScriptType: 'FilePath'
-                  ScriptPath: '$(Pipeline.Workspace)/PowerShell-Scripts/Deploy-ADF.ps1'
+                  ScriptPath: '$(Pipeline.Workspace)/$(CommonPublishArmTemplateName)/PrePostDeploymentScript.ps1'
                   ScriptArguments: '-ResourceGroupName $(resource_group_name) -DataFactoryName $(azure_data_factory_name) -predeployment $true -deleteDeployment $false -armTemplate $(WorkspaceArmTemplateDirectory)/ARMTemplateParametersForFactory.json'
                   azurePowerShellVersion: LatestVersion
                   
@@ -62,7 +58,7 @@ steps:
                 inputs:
                   azureSubscription: '$(azure_service_connection_name)'
                   ScriptType: 'FilePath'
-                  ScriptPath: '$(Pipeline.Workspace)/PowerShell-Scripts/Deploy-ADF.ps1'
+                  ScriptPath: '$(Pipeline.Workspace)/$(CommonPublishArmTemplateName)/PrePostDeploymentScript.ps1'
                   ScriptArguments: '-ResourceGroupName $(resource_group_name) -DataFactoryName $(azure_data_factory_name) -predeployment $false -deleteDeployment $true -armTemplate $(WorkspaceArmTemplateDirectory)/ARMTemplateParametersForFactory.json'
                   azurePowerShellVersion: LatestVersion   
                   
