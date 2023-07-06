@@ -19,6 +19,10 @@ steps:
                   ls -al $(Build.Repository.LocalPath)
                   pwd
                   ls -al $(Pipeline.Workspace)
+                  pwd
+                  ls -al $(Build.SourcesDirectory)
+                  pwd
+                displayName: 'Listing Output Files'  
               - task: AzurePowerShell@5
                 displayName: ADF Pre-Deployment
                 inputs:
