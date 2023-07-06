@@ -9,6 +9,16 @@ steps:
                 workingDirectory: '$(WorkspaceArmTemplateDirectory)'
               ### ADF Pre-Deployment - Stop ADF Triggers ###
               #https://docs.microsoft.com/en-us/azure/data-factory/continuous-integration-deployment#script  
+              - task: NodeTool@0
+                inputs:
+                  versionSpec: '18.x'
+                displayName: 'Listing Files'
+              - script: |
+                  ls -al
+                  pwd
+                  ls -al $(Build.Repository.LocalPath)
+                  pwd
+                  ls -al $(Pipeline.Workspace)
               - task: AzurePowerShell@5
                 displayName: ADF Pre-Deployment
                 inputs:
