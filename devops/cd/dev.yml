@@ -7,6 +7,16 @@ steps:
               - script: dir
                 displayName: List files in Workspace
                 workingDirectory: '$(WorkspaceArmTemplateDirectory)'
+              ### ADF Pre-Deployment - Stop ADF Triggers ###
+              #https://docs.microsoft.com/en-us/azure/data-factory/continuous-integration-deployment#script  
+              - task: toggle-adf-trigger@2
+                displayName: ADF Pre-Deployment
+                inputs:
+                  azureSubscription: '$(azure_service_connection_name)'
+                  ResourceGroupName: '$(resource_group_name)'
+                  DatafactoryName: '$(azure_data_factory_name)'
+                  TriggerFilter: 'Dataload_Trigger'
+                  TriggerStatus: 'stop'  
 
               - task: AzureResourceManagerTemplateDeployment@3
                 displayName: 'Deploying to Dev RG task'
@@ -23,3 +33,15 @@ steps:
                   #overrideParameters: '-name ${{ parameters.ADF_NAME }} -location $(ADF_LOCATION) -factoryName $(azure_data_factory_name)'
                   #overrideParameters: '-factoryName "$(DevAdfName)" -LS_SalesDatabase_connectionString "$(DevSalesDbConnectionString)" -LS_DataLake_properties_typeProperties_url "$(DevDataLakeUrl)" -LS_KeyVault_properties_typeProperties_baseUrl "$(DevKeyVaultBaseUrl)"'
                   deploymentMode: 'Incremental'
+                  
+              ### ADF Post-Deployment - Clean up and Start ADF Triggers ###
+              ###https://docs.microsoft.com/en-us/azure/data-factory/continuous-integration-deployment#script    
+              - task: toggle-adf-trigger@2
+                displayName: ADF Post-Deployment
+                inputs:
+                azureSubscription: '$(azure_service_connection_name)'
+                ResourceGroupName: '$(resource_group_name)'
+                DatafactoryName: '$(azure_data_factory_name)'
+                TriggerFilter: 'Dataload_Trigger'
+                TriggerStatus: 'start'    
+                  
