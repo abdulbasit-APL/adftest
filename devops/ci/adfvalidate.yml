@@ -46,12 +46,12 @@ steps:
           command: 'custom'
           workingDir: '$(adf_package_file_path)/'
           customCommand: 'run build export $(Build.SourcesDirectory)/data_ops $(BuildAdfResourceId) "$(CommonPublishArmTemplateName)"'
-      - task: CopyFiles@2
-        displayName: 'Copy Deploy-ADF.ps1 file'
-        inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/'
-          Contents: 'PowerShell-Scripts/Deploy-ADF.ps1'
-          TargetFolder: '$(adf_package_file_path)/$(CommonPublishArmTemplateName)'
+      #- task: CopyFiles@2
+      #  displayName: 'Copy Deploy-ADF.ps1 file'
+      #  inputs:
+      #    SourceFolder: '$(Build.SourcesDirectory)/'
+      #    Contents: 'PowerShell-Scripts/Deploy-ADF.ps1'
+      #    TargetFolder: '$(adf_package_file_path)/$(CommonPublishArmTemplateName)'
       # Publish the artifact
       - task: PublishPipelineArtifact@1
         displayName: 'Publish ARM tempate'
