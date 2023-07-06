@@ -23,7 +23,7 @@ steps:
           pwd
           ls -al $(adf_package_file_path)
           npm cache clean --force
-        
+        displayName: Listing Files
       - task: Npm@1
         displayName: 'Install npm package'
         inputs:
