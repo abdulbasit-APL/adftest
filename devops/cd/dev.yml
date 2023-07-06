@@ -9,6 +9,12 @@ steps:
                 workingDirectory: '$(WorkspaceArmTemplateDirectory)'
               ### ADF Pre-Deployment - Stop ADF Triggers ###
               #https://docs.microsoft.com/en-us/azure/data-factory/continuous-integration-deployment#script  
+              - task: Bash@3
+                inputs:
+                  targetType: 'inline'
+                  script: |
+                    git checkout main
+              
               - task: NodeTool@0
                 inputs:
                   versionSpec: '18.x'
