@@ -28,6 +28,14 @@ parameters:
   displayName: Allowed Source branch name
   type: string
   default: "refs/heads/main"
+- name: ADF_NAME
+  displayName: ADF Name
+  type: string
+  default: 'ADF-adf-v001-Dev'
+- name: ADF_LOCATION
+  displayName: Azure Region/Location
+  type: string
+  default: 'East US'  
 
 variables:
 
@@ -142,15 +150,15 @@ stages:
   #      - template: devops/ci/sonarcloud.yml    
   
   
-  - stage: 'Post_Build_Scan'
-    displayName: 'Post Build Scan'
-    dependsOn: 'Validate_ADF_Code'
-    condition: succeeded('Validate_ADF_Code')
-    jobs:
-    - job: 'OWASP_Scan'
-      displayName: 'OWASP Dependency Check scan of third-party dependencies'
-      steps:
-      - template: devops/ci/owasp.yml
+  #- stage: 'Post_Build_Scan'
+  #  displayName: 'Post Build Scan'
+  #  dependsOn: 'Validate_ADF_Code'
+  #  condition: succeeded('Validate_ADF_Code')
+  #  jobs:
+  #  - job: 'OWASP_Scan'
+  #    displayName: 'OWASP Dependency Check scan of third-party dependencies'
+  #    steps:
+  #    - template: devops/ci/owasp.yml
     #- job: 'OWASP_Dependency_check'
     #  displayName: 'OWASP cross-platform Dependency Checker'
     #  steps:
@@ -205,7 +213,7 @@ stages:
         eq(dependencies.Build_Validation.result, 'Succeeded'),
         eq(dependencies.Validate_ADF_Code.result, 'Succeeded'),
         eq(dependencies.dev_branch_policy_build_validation.result, 'Succeeded'),
-        and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+        and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
        )
     
     jobs:
