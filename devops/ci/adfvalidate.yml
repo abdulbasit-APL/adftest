@@ -59,3 +59,14 @@ steps:
           targetPath: '$(adf_package_file_path)/$(CommonPublishArmTemplateName)'
           artifact: '$(CommonPublishArmTemplateName)'
           publishLocation: 'pipeline'
+          
+      ###################################
+      # Show treeview of agent
+      ###################################
+      - powershell: |
+          tree "$(Pipeline.Workspace)" /F
+          Write-host "--------------------ARMTemplateForFactory--------------------"
+          Get-Content -Path $(WorkspaceArmTemplateDirectory)/ARMTemplateParametersForFactory.json
+          Write-host "-------------------------------------------------------------"
+        displayName: 'Treeview Workspace and ArmTemplateOutput content '
+    
