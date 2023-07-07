@@ -63,7 +63,7 @@ steps:
                     -ResourceGroupName $(resource_group_name) \
                     -DataFactoryName  $(azure_data_factory_name) \
                     -predeployment $false \
-                    -deleteDeployment $false"
+                    -deleteDeployment $true"
                   azurePowerShellVersion: LatestVersion
               
               #- task: AzurePowerShell@5
