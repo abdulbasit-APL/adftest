@@ -21,21 +21,15 @@ steps:
                   ls -al '$(WorkspaceArmTemplateDirectory)'
                   pwd
                 displayName: 'List Artifact contents'  
-              - task: AzurePowerShell@5
-                displayName: 'Stop ADF Triggers before deployment'
-                inputs:
-                  azureSubscription: '$(azure_service_connection_name)'
-                  ScriptPath: '$(Pipeline.Workspace)/$(CommonPublishArmTemplateName)/PrePostDeploymentScript.ps1'
-                  ScriptArguments: '-ArmTemplate "$(WorkspaceArmTemplateDirectory)/ARMTemplateForFactory.json" -ResourceGroupName $(resource_group_name) -DataFactoryName $(azure_data_factory_name) -predeployment $true -deleteDeployment $false'
-                  azurePowerShellVersion: LatestVersion
+              
               #- task: AzurePowerShell@5
-              #  displayName: ADF Pre-Deployment
+              #  displayName: 'Stop ADF Triggers before deployment'
               #  inputs:
               #    azureSubscription: '$(azure_service_connection_name)'
-              #    ScriptType: 'FilePath'
               #    ScriptPath: '$(Pipeline.Workspace)/$(CommonPublishArmTemplateName)/PrePostDeploymentScript.ps1'
-              #    ScriptArguments: '-ResourceGroupName $(resource_group_name) -DataFactoryName $(azure_data_factory_name) -predeployment $true -deleteDeployment $false -armTemplate $(WorkspaceArmTemplateDirectory)/ARMTemplateParametersForFactory.json'
+              #    ScriptArguments: '-ArmTemplate "$(WorkspaceArmTemplateDirectory)/ARMTemplateForFactory.json" -ResourceGroupName $(resource_group_name) -DataFactoryName $(azure_data_factory_name) -predeployment $true -deleteDeployment $false'
               #    azurePowerShellVersion: LatestVersion
+              
                   
 
               - task: AzureResourceManagerTemplateDeployment@3
@@ -54,33 +48,16 @@ steps:
                   #overrideParameters: '-factoryName "$(DevAdfName)" -LS_SalesDatabase_connectionString "$(DevSalesDbConnectionString)" -LS_DataLake_properties_typeProperties_url "$(DevDataLakeUrl)" -LS_KeyVault_properties_typeProperties_baseUrl "$(DevKeyVaultBaseUrl)"'
                   deploymentMode: 'Incremental'
                   
-              - task: AzurePowerShell@5
-                displayName: 'Start Triggers'
-                inputs:
-                  azureSubscription: '$(azure_service_connection_name)'
-                  ScriptPath: '$(Pipeline.Workspace)/$(CommonPublishArmTemplateName)/PrePostDeploymentScript.ps1'
-                  ScriptArguments: "-armTemplate $(WorkspaceArmTemplateDirectory)/ARMTemplateForFactory.json \
-                    -ResourceGroupName $(resource_group_name) \
-                    -DataFactoryName  $(azure_data_factory_name) \
-                    -predeployment $false \
-                    -deleteDeployment $false"
-                  azurePowerShellVersion: LatestVersion
-              
               #- task: AzurePowerShell@5
-              #  displayName: 'Start ADF Triggers'
+              #  displayName: 'Start Triggers'
               #  inputs:
               #    azureSubscription: '$(azure_service_connection_name)'
               #    ScriptPath: '$(Pipeline.Workspace)/$(CommonPublishArmTemplateName)/PrePostDeploymentScript.ps1'
-              #    ScriptArguments: '-ArmTemplate "$(WorkspaceArmTemplateDirectory)/ARMTemplateParametersForFactory.json" -ResourceGroupName $(resource_group_name) -DataFactoryName $(azure_data_factory_name) -predeployment $false -deleteDeployment $false'
+              #    ScriptArguments: "-armTemplate $(WorkspaceArmTemplateDirectory)/ARMTemplateForFactory.json \
+              #      -ResourceGroupName $(resource_group_name) \
+              #      -DataFactoryName  $(azure_data_factory_name) \
+              #      -predeployment $false \
+              #      -deleteDeployment $false"
               #    azurePowerShellVersion: LatestVersion
-              ### ADF Post-Deployment - Clean up and Start ADF Triggers ###
-              ###https://docs.microsoft.com/en-us/azure/data-factory/continuous-integration-deployment#script    
-              #- task:  AzurePowerShell@5
-              #  displayName: ADF Post-Deployment
-              #  inputs:
-              #    azureSubscription: '$(azure_service_connection_name)'
-              #    ScriptType: 'FilePath'
-              #    ScriptPath: '$(Pipeline.Workspace)/$(CommonPublishArmTemplateName)/PrePostDeploymentScript.ps1'
-              #    ScriptArguments: '-ResourceGroupName $(resource_group_name) -DataFactoryName $(azure_data_factory_name) -predeployment $false -deleteDeployment $true -armTemplate $(WorkspaceArmTemplateDirectory)/ARMTemplateParametersForFactory.json'
-              #    azurePowerShellVersion: LatestVersion   
-                  
+              
+             
