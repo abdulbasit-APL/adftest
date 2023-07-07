@@ -127,7 +127,7 @@ stages:
   - stage: 'Validate_ADF_Code'
     pool:
       vmImage: 'ubuntu-latest'
-    displayName: 'Validating the ADF Code'
+    displayName: 'Build ARM Template'
     dependsOn: 'PreDeployment'
     jobs:
       #- job: 'Building_Artifact'
