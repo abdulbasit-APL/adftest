@@ -66,7 +66,7 @@ steps:
       - powershell: |
           tree "$(Pipeline.Workspace)" /F
           Write-host "--------------------ARMTemplateForFactory--------------------"
-          Get-Content -Path $(WorkspaceArmTemplateDirectory)/ARMTemplateParametersForFactory.json
+          Get-Content -Path $(Pipeline.Workspace)/$(CommonPublishArmTemplateName)/ARMTemplateParametersForFactory.json
           Write-host "-------------------------------------------------------------"
         displayName: 'Treeview Workspace and ArmTemplateOutput content '
     
