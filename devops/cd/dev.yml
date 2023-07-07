@@ -58,7 +58,7 @@ steps:
                 displayName: 'Start Triggers'
                 inputs:
                   azureSubscription: '$(azure_service_connection_name)'
-                  ScriptPath: '$(System.ArtifactsDirectory)/PrePostDeploymentScript.ps1'
+                  ScriptPath: '$(Pipeline.Workspace)/$(CommonPublishArmTemplateName)/PrePostDeploymentScript.ps1'
                   ScriptArguments: "-armTemplate $(WorkspaceArmTemplateDirectory)/ARMTemplateForFactory.json \
                     -ResourceGroupName $(resource_group_name) \
                     -DataFactoryName  $(azure_data_factory_name) \
