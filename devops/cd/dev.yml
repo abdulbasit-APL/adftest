@@ -30,7 +30,7 @@ steps:
                 inputs:
                   azureSubscription: '$(azure_service_connection_name)'
                   ScriptPath: '$(Pipeline.Workspace)/$(CommonPublishArmTemplateName)/PrePostDeploymentScript.ps1'
-                  ScriptArguments: '-arm-tempalte "$(WorkspaceArmTemplateDirectory)/ARMTemplateParametersForFactory.json" -ResourceGroupName $(resource_group_name) -DataFactoryName $(azure_data_factory_name) -predeployment $true -deleteDeployment $false'
+                  ScriptArguments: '-ArmTemplate "$(WorkspaceArmTemplateDirectory)/ARMTemplateParametersForFactory.json" -ResourceGroupName $(resource_group_name) -DataFactoryName $(azure_data_factory_name) -predeployment $true -deleteDeployment $false'
                   azurePowerShellVersion: LatestVersion
               #- task: AzurePowerShell@5
               #  displayName: ADF Pre-Deployment
@@ -63,7 +63,7 @@ steps:
                 inputs:
                   azureSubscription: '$(azure_service_connection_name)'
                   ScriptPath: '$(Pipeline.Workspace)/$(CommonPublishArmTemplateName)/PrePostDeploymentScript.ps1'
-                  ScriptArguments: '-arm-tempalte "$(WorkspaceArmTemplateDirectory)/ARMTemplateParametersForFactory.json" -ResourceGroupName $(resource_group_name) -DataFactoryName $(azure_data_factory_name) -predeployment $false -deleteDeployment $true'
+                  ScriptArguments: '-ArmTemplate "$(WorkspaceArmTemplateDirectory)/ARMTemplateParametersForFactory.json" -ResourceGroupName $(resource_group_name) -DataFactoryName $(azure_data_factory_name) -predeployment $false -deleteDeployment $false'
                   azurePowerShellVersion: LatestVersion
               ### ADF Post-Deployment - Clean up and Start ADF Triggers ###
               ###https://docs.microsoft.com/en-us/azure/data-factory/continuous-integration-deployment#script    
